@@ -94,6 +94,24 @@ def merge_clean_data():
             catalog = catalogs[fields["format"]]
             covid_df[field].replace(catalog["CLAVE"].values, catalog["DESCRIPCIÓN"].values, inplace=True)
 
+def searchIntoJSON(atr1, atr2, fileName):
+  consulta = covid_df.groupby([atr1, atr2], as_index = False)["id_registro"].count()
+  x,y = consulta.shape
+  info = []
+  for i in range(0,x):
+    for j in range(0,y):
+      if j==0:
+        info.append({
+        atr1 : consulta.values[i][j],
+        atr2 : consulta.values[i][j+1],
+        'count': str(consulta.values[i][j+2])
+        })
+
+  with open("json_files/" + fileName + ".json", 'w') as outfile:
+      json.dump(info, outfile)
+
+
+
 
 load_files()
 
@@ -107,9 +125,24 @@ load_files()
 
 # print(covid_df["ENTIDAD_RES"].value_counts())
 
-sex_by_state_df = covid_df[['SEXO', 'ENTIDAD_RES']]
+'''
+sex_by_state_df = covid_df[['sexo', 'entidad_res']]
 print("The data set contains " + str(sex_by_state_df.shape[0]) + " rows by " + str(sex_by_state_df.shape[1]) + " columns.")
 print(sex_by_state_df.head())
+'''
+
 
 # TODO: Make sure you have virtualenv, django and djantorestframework
+
+#grafica 1 intubados/enfermedades 
+searchIntoJSON(atr1="tipo_paciente", atr2="intubado", fileName="graph-1")
+#grafica 2 muertes/sexo/edad
+searchIntoJSON(atr1="edad", atr2="sexo", fileName="graph-2")
+#grafica 3 laboratorio/por estado
+searchIntoJSON(atr1="toma_muestra_lab", atr2="entidad_res", fileName="graph-3")
+#grafica 4 sector/por estado
+searchIntoJSON(atr1="entidad_res", atr2="sector", fileName="graph-4")
+
+f = open('json_files/graph-4.json',)
+
 
