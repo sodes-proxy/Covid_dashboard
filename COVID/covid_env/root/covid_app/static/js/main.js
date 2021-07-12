@@ -1,134 +1,95 @@
-var margin ={top: 20, right: 300, bottom: 30, left: 50},
-    width = 800 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom,
-    radius = Math.min(width, height) / 2;
+var margin = {top: 60, right: 10, bottom: 120, left:170};
+var width = 600;
+var height = 400;
 
 var svg = d3.select("#chart-area").append("svg")
-	.attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
-var g = svg.append("g")
-    .attr("transform", 
-    	"translate(" + width / 2 + "," + height / 2 + ")");
-
-//d3.scale.category20()
-var color = d3.scaleOrdinal(d3.schemeCategory10);
-
-//d3.layout.pie()
-var pie = d3.pie()
-    .value((d) => { return d.count; })
-    .sort(null);
-
-var arc = d3.arc()
-    .innerRadius(radius - 80)
-    .outerRadius(radius - 20);
-
-
+	.attr("width", width + margin.right + margin.left)
+	.attr("height", height + margin.top + margin.bottom);
+var group= svg.append("g")
+	.attr("transform","translate("+margin.left+","+margin.top+")");
+var legend = group.append("g")
+    .attr("transform", "translate(" + (width - 10) + "," + (height - 170) + ")");
+    legend.append("g")
+    .append("text")
+    .attr("x", -5)
+    .attr("y",-30)
+    .attr("text-anchor", "end")
+    .text("Tipo de Paciente");
 data.forEach((d) => {
     d.count = +d.count;
-    d.fruit = d.fruit.toLowerCase();
+    d.tipo_paciente = d.tipo_paciente.toLowerCase();
 });
-
-console.log(data)
-
-var regionsByFruit = d3.nest()
-    .key((d) => { return d.fruit; })
-    .entries(data)
-    .reverse();
-
-console.log(regionsByFruit)
-
-var label = d3.select("form").selectAll("label")
-    .data(regionsByFruit)
-    .enter().append("label");
-
-// Dynamically add radio buttons
-label.append("input")
-        .attr("type", "radio")
-        .attr("name", "fruit")
-        .attr("value", (d) => { return d.key; })
-        .on("change", update)
-    .filter((d, i) => { return !i; })
-        .each(update)
-        .property("checked", true);
-
-label.append("span")
-    .attr("fill", "red")
-    .text((d) => { return d.key; });
-
-function update(region) {
-    var path = g.selectAll("path");
-
-    var data0 = path.data(),
-        data1 = pie(region.values);
-
-    // JOIN elements with new data.
-    path = path.data(data1, key);
-
-    // EXIT old elements from the screen.
-    path.exit()
-        .datum((d, i) => { 
-        	return findNeighborArc(i, data1, data0, key) || d; 
-        })
-        .transition()
-        .duration(750)
-        .attrTween("d", arcTween)
-        .remove();
+    months=data.map((d)=>{return d.intubado});
+    var pacien = data.map((d) => {return d.tipo_paciente;});
+	var pacientes = [...new Set(pacien)];
     
-    // UPDATE elements still on the screen.
-    path.transition()
-        .duration(750)
-        .attrTween("d", arcTween);
-
-    // ENTER new elements in the array.
-    path.enter()
-        .append("path")
-        .each((d, i) => { 
-        	this._current = 
-        		findNeighborArc(i, data0, data1, key) || d; 
-        }) 
-        .attr("fill", (d) => {  
-        	return color(d.data.region) 
-        })
-        .transition()
-        .duration(750)
-            .attrTween("d", arcTween);
-}
-
-function key(d) {
-    return d.data.region;
-}
-
-function findNeighborArc(i, data0, data1, key) {
-    var d;
-    return (d = findPreceding(i, data0, data1, key)) ? {startAngle: d.endAngle, endAngle: d.endAngle}
-        : (d = findFollowing(i, data0, data1, key)) ? {startAngle: d.startAngle, endAngle: d.startAngle}
-        : null;
-}
-
-// Find the element in data0 that joins the highest preceding element in data1.
-function findPreceding(i, data0, data1, key) {
-    var m = data0.length;
-    while (--i >= 0) {
-        var k = key(data1[i]);
-        for (var j = 0; j < m; ++j) {
-            if (key(data0[j]) === k) return data0[j];
-        }
-    }
-}
-
-// Find the element in data0 that joins the lowest following element in data1.
-function findFollowing(i, data0, data1, key) {
-    var n = data1.length, m = data0.length;
-    while (++i < n) {
-        var k = key(data1[i]);
-        for (var j = 0; j < m; ++j) {
-            if (key(data0[j]) === k) return data0[j];
-        }
-    }
-}
-
-function arcTween(d) {
-    var i = d3.interpolate(this._current, d);
-    this._current = i(1)
-    return (t) => { return arc(i(t)); };
-}
+    max_revenue=d3.max(data,(d)=>{return d.count});
+    var x = d3.scaleBand()
+	.domain(months)
+	.range([0,400])
+	.paddingInner(.3)
+	.paddingOuter(.3);
+    console.log(data);
+    var y = d3.scaleLinear()
+	.domain([max_revenue,0])
+	.range([0,400]);
+    var colors=d3.scaleOrdinal()
+    .domain(months)
+    .range(d3.schemeSet3);
+	var revenues=group.selectAll("rect").data(data);
+    revenues.enter()
+        .append("rect")
+	    .attr("x",(d)=>{return x(d.intubado);})
+	    .attr("y",(d)=>{return y(d.count);})
+	    .attr("height", (d)=>{return height-y(d.count);})
+        .attr("width",x.bandwidth())
+	    .attr("fill",(d)=>{return colors(d.tipo_paciente)});
+		var bottomAxis = d3.axisBottom(x);
+		group.append("g")
+			.attr("class", "bottom axis")
+			.attr("transform", "translate(0, " + height+ ")")
+			.call(bottomAxis)
+			.selectAll("text")
+    		.attr("y", "30")
+	    	.attr("x", "0")
+    		.attr("text-anchor", "end")
+        .attr("transform", "rotate(-20)");
+		var leftAxis = d3.axisLeft(y)
+			.ticks(11)
+			.tickFormat((d)=>{return d;});
+            
+		group.append("g")
+			.attr("class", "left-axis")
+			.call(leftAxis);
+		group.append("text")
+			.attr("class", "x axis-label")
+			.attr("x", (width / 2))
+			.attr("y", height + 120)
+			.style("font-size", "20px")
+			.attr("text-anchor", "middle")
+			.attr("transform", "translate(-120, -20)")
+			.text("Intubado");
+		group.append("text")
+			.attr("class", "y axis-label")
+			.attr("x", - (height / 2))
+			.attr("y", -60)
+			.style("font-size", "20px")
+			.attr("text-anchor", "middle")
+			.attr("transform", "rotate(-90)")
+			.text("Número de Personas");
+            pacientes.forEach((c, i) => {
+                var paciente_row = legend.append("g")
+                    .attr("transform", "translate(0, " + (i * 20) + ")");
+        
+                paciente_row.append("rect")
+                    .attr("width", 10)
+                    .attr("height", 10)
+                    .attr("fill", colors(c))
+                    .attr("stroke", "white");
+        
+                paciente_row.append("text")
+                    .attr("x", -20)
+                    .attr("y", 10)
+                    .attr("text-anchor", "end")
+                    .text(c);
+                 });
