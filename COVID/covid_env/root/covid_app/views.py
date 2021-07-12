@@ -12,18 +12,10 @@ import json
 
 
 def index(request):
-    #context = {}
-    #return render(request, 'covid_app/index.html', context)
     f = open('C:\\Users\\sodes\\Documents\\Covid_dashboard\\COVID\\json_files\\graph-1.json',)
     data=json.load(f)
-    donut_json = '[ { "region": "East", "fruit": "Apples", "count": "53245" }, { "region": "West", "fruit": ' \
-                 '"Apples", "count": "28479" }, { "region": "South", "fruit": "Apples", "count": "19697" }, ' \
-                 '{ "region": "North", "fruit": "Apples", "count": "24037" }, { "region": "Central", ' \
-                 '"fruit": "Apples", "count": "40245" }, { "region": "East", "fruit": "Oranges", "count": "200" ' \
-                 '}, { "region": "South", "fruit": "Oranges", "count": "200" }, { "region": "Central", ' \
-                 '"fruit": "Oranges", "count": "200" }] '
     context = {'data_json': SafeString(data)}
-    return render(request, 'covid_app/donut.html', context)
+    return render(request, 'covid_app/index.html', context)
 
 
 def pie_chart(request):

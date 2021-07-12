@@ -11,10 +11,11 @@ var legend = group.append("g")
     .attr("transform", "translate(" + (width - 10) + "," + (height - 170) + ")");
     legend.append("g")
     .append("text")
-    .attr("x", -5)
-    .attr("y",-30)
+    .attr("x", -25)
+    .attr("y",-70)
     .attr("text-anchor", "end")
-    .text("Tipo de Paciente");
+    .text("Tipo de Paciente")
+	.style("font-size", "20px");
 data.forEach((d) => {
     d.count = +d.count;
     d.tipo_paciente = d.tipo_paciente.toLowerCase();
@@ -82,14 +83,17 @@ data.forEach((d) => {
                     .attr("transform", "translate(0, " + (i * 20) + ")");
         
                 paciente_row.append("rect")
-                    .attr("width", 10)
-                    .attr("height", 10)
+					.attr("x", -35)
+                    .attr("y", -23)
+                    .attr("width", 15)
+                    .attr("height", 15)
                     .attr("fill", colors(c))
                     .attr("stroke", "white");
         
                 paciente_row.append("text")
-                    .attr("x", -20)
-                    .attr("y", 10)
+                    .attr("x", -50)
+                    .attr("y", -10)
                     .attr("text-anchor", "end")
-                    .text(c);
+                    .text(c)
+					.style("font-size", "18px");
                  });
