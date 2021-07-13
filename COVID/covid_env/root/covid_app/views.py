@@ -12,11 +12,26 @@ import json
 
 
 def index(request):
-    f = open('C:\\Users\\sodes\\Documents\\Covid_dashboard\\COVID\\json_files\\graph-1.json',)
+    f = open('..\\..\\..\\..\\Covid_dashboard\\COVID\\json_files\\graph-2.json',)
     data=json.load(f)
     context = {'data_json': SafeString(data)}
     return render(request, 'covid_app/index.html', context)
 
+def graph1(request):
+    f = open('..\\..\\..\\..\\Covid_dashboard\\COVID\\json_files\\graph-1.json',)
+    data=json.load(f)
+    context = {'data_json': SafeString(data)}
+    return render(request, 'covid_app/graph1.html', context)
+def graph3(request):
+    f = open('..\\..\\..\\..\\Covid_dashboard\\COVID\\json_files\\graph-3.json',)
+    data=json.load(f)
+    context = {'data_json': SafeString(data)}
+    return render(request, 'covid_app/graph3.html', context)
+def graph4(request):
+    f = open('..\\..\\..\\..\\Covid_dashboard\\COVID\\json_files\\graph-4.json',)
+    data=json.load(f)
+    context = {'data_json': SafeString(data)}
+    return render(request, 'covid_app/graph4.html', context)
 
 def pie_chart(request):
     # covid_df = pd.DataFrame.from_records(data)

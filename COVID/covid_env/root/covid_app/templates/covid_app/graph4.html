@@ -12,7 +12,7 @@
 </head>
 <body>
 {% block content %}
-<h1 style="text-align:center">Muertes Covid por sexo</h1>
+<h1 style="text-align:center">Clasificación por Sectores</h1>
 <script>
     data = {{ data_json }}
 </script>
@@ -41,7 +41,7 @@
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/d3.min.js' %}"></script>
 <!-- Custom JS -->
-<script src="{% static 'js/main.js' %}"></script>
+<script src="{% static 'js/graph4.js' %}"></script>
 {% endblock %}
 </body>
 </html>

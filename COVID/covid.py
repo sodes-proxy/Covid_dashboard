@@ -111,7 +111,53 @@ def searchIntoJSON(atr1, atr2, fileName):
       json.dump(info, outfile)
 
 
+def searchIntoJSON2(atr1, fileName):
+  labels = covid_df[atr1].value_counts().index
+  values = covid_df[atr1].value_counts().values
+  x = len(labels)
+  info = []
+  for i in range(0,x):
+    info.append({
+        atr1 : labels[i],
+        'count' : str(values[i])
+    })
+  with open("json_files/"+fileName + ".json", 'w') as outfile:
+      json.dump(info, outfile)
 
+def clear_graph2():
+    data = []
+    with open('json_files\\graph-2.json') as file:
+        data = json.load(file)
+
+    #declare maps for age range
+    map_contH=dict()
+    map_contF=dict()
+    #initialize in 0 counters
+    for i in range(0,100,10):
+        map_contH[str(0+i)+"-"+str(9+i)]=0
+        map_contF[str(0+i)+"-"+str(9+i)]=0
+    #add count
+    for ele in data:
+       for i in range(0,100,10):
+            if (0+i)<=ele["edad"]<=(9+i) and ele["sexo"] == "HOMBRE":
+                map_contH[str(0+i)+"-"+str(9+i)]+=int(ele["count"])
+            elif (0+i)<=ele["edad"]<=(9+i) and ele["sexo"] == "MUJER":
+                map_contF[str(0+i)+"-"+str(9+i)]+=int(ele["count"])
+    info = []
+    for key in map_contF:
+        info.append({
+        'rango' : key,
+        'sexo' : 'MUJER',
+        'count': str(map_contF[key])
+        })
+        info.append({
+        'rango' : key,
+        'sexo' : 'HOMBRE',
+        'count': str(map_contH[key])
+        })
+
+    with open("json_files/graph-2.json", 'w') as outfile:
+        json.dump(info, outfile)
 
 load_files()
 
@@ -139,10 +185,7 @@ searchIntoJSON(atr1="tipo_paciente", atr2="intubado", fileName="graph-1")
 #grafica 2 muertes/sexo/edad
 searchIntoJSON(atr1="edad", atr2="sexo", fileName="graph-2")
 #grafica 3 laboratorio/por estado
-searchIntoJSON(atr1="toma_muestra_lab", atr2="entidad_res", fileName="graph-3")
+searchIntoJSON2(atr1="toma_muestra_lab", fileName="graph-3")
 #grafica 4 sector/por estado
-searchIntoJSON(atr1="entidad_res", atr2="sector", fileName="graph-4")
-
-f = open('json_files/graph-4.json',)
-
-
+searchIntoJSON2(atr1="sector", fileName="graph-4")
+clear_graph2()

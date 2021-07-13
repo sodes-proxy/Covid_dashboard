@@ -11,39 +11,37 @@ var legend = group.append("g")
     .attr("transform", "translate(" + (width - 10) + "," + (height - 170) + ")");
     legend.append("g")
     .append("text")
-    .attr("x", 15)
+    .attr("x", -25)
     .attr("y",-70)
     .attr("text-anchor", "end")
-    .text("Rango de edades")
+    .text("muestra laboratorio")
 	.style("font-size", "20px");
+
 data.forEach((d) => {
     d.count = +d.count;
 });
-    edades=data.map((d)=>{return d.rango});
-	var edadesLegend = [...new Set(edades)];
-    var sexo = data.map((d) => {return d.sexo;});
-	var sexos = [...new Set(sexo)];
-    
-    max_edad=d3.max(data,(d)=>{return d.count});
+    muestras=data.map((d)=>{return d.toma_muestra_lab}); 
+    max_height=d3.max(data,(d)=>{return d.count});
     var x = d3.scaleBand()
-	.domain(sexo)
+	.domain(muestras)
 	.range([0,400])
 	.paddingInner(.3)
 	.paddingOuter(.3);
+    console.log(data);
     var y = d3.scaleLinear()
-	.domain([max_edad,0])
+	.domain([max_height,0])
 	.range([0,400]);
     var colors=d3.scaleOrdinal()
-    .domain(edades)
+    .domain(muestras)
     .range(d3.schemeSet3);
-	var personas=group.selectAll("rect").data(data);
-    personas.enter()
+	var revenues=group.selectAll("rect").data(data);
+    revenues.enter()
         .append("rect")
-	    .attr("x",(d)=>{return x(d.sexo);})
+	    .attr("x",(d)=>{return x(d.toma_muestra_lab);})
 	    .attr("y",(d)=>{return y(d.count);})
 	    .attr("height", (d)=>{return height-y(d.count);})
         .attr("width",x.bandwidth())
-	    .attr("fill",(d)=>{return colors(d.rango)});
+	    .attr("fill",(d)=>{return colors(d.toma_muestra_lab)});
 		var bottomAxis = d3.axisBottom(x);
 		group.append("g")
 			.attr("class", "bottom axis")
@@ -64,11 +62,11 @@ data.forEach((d) => {
 		group.append("text")
 			.attr("class", "x axis-label")
 			.attr("x", (width / 2))
-			.attr("y", height + 100)
+			.attr("y", height + 120)
 			.style("font-size", "20px")
 			.attr("text-anchor", "middle")
 			.attr("transform", "translate(-120, -20)")
-			.text("Sexo");
+			.text("tomo muestra de laboratorio");
 		group.append("text")
 			.attr("class", "y axis-label")
 			.attr("x", - (height / 2))
@@ -77,20 +75,21 @@ data.forEach((d) => {
 			.attr("text-anchor", "middle")
 			.attr("transform", "rotate(-90)")
 			.text("Número de Personas");
-            edadesLegend.forEach((c, i) => {
+            muestras.forEach((c, i) => {
                 var paciente_row = legend.append("g")
                     .attr("transform", "translate(0, " + (i * 20) + ")");
+        
                 paciente_row.append("rect")
-					.attr("x", -25)
-                    .attr("y", -33)
+					.attr("x", -35)
+                    .attr("y", -23)
                     .attr("width", 15)
                     .attr("height", 15)
                     .attr("fill", colors(c))
                     .attr("stroke", "white");
         
                 paciente_row.append("text")
-                    .attr("x", -40)
-                    .attr("y", -20)
+                    .attr("x", -50)
+                    .attr("y", -10)
                     .attr("text-anchor", "end")
                     .text(c)
 					.style("font-size", "18px");
